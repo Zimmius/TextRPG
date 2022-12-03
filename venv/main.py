@@ -4,7 +4,7 @@ from Encounter import Encounter
 
 
 Encounter1 = Encounter()
-player_lines = {1: "-Bla bla!", 2: "-Ble ble!", 3: "-Blu Blu!"}
+player_lines = {1: "-Bla bla!!!", 2: "-Ble ble!", 3: "-Blu Blu!"}
 tavern_guard_lines = {1: "Стражник: -Стой, кто идёт!\n"}
 player_weapons = {1: {"name": "Рука", "damage": [1, 4]}, 2: {"name": "Something else", "damage": [10, 15]}}
 enemy_weapons = {1: {"name": "Дубина", "damage": [1, 4]}}

@@ -1,13 +1,36 @@
 class Encounter:
+    def __init__(self, moves = {}, dialogues = {'player': ['default'], 'other': ['default']}):
+        self.moves = moves
+        self.dialogues = dialogues
+
+
     unknown_command = "Неопознанная команда"
-    def dialogue(self, player_lines, other_lines):
+    # def dialogue(self, player_lines, other_lines):
+    #     encounter = True
+    #     print(f"{other_lines[1]}")
+    #     print("Вы отвечаете:")
+    #     while encounter == True:
+    #         try:
+    #             for line in player_lines:
+    #                 print(f"{line}. {player_lines[line]}")
+    #             line_pick = int(input("Выберите вариант: "))
+    #             if line_pick > len(player_lines) or line_pick <= 0:
+    #                 print(self.unknown_command)
+    #                 continue
+    #             encounter = False
+    #             return line_pick
+    #         except ValueError:
+    #             print(self.unknown_command)
+
+    def dialogue(self, player_lines_numbers, other_lines_numbers):
         encounter = True
-        print(f"{other_lines[1]}")
+        player_lines = self.dialogues['player'][player_lines_numbers]
+        print(f"{self.dialogues['other'][other_lines_numbers]}")
         print("Вы отвечаете:")
         while encounter == True:
             try:
                 for line in player_lines:
-                    print(f"{line}. {player_lines[line]}")
+                    print(f"{player_lines.index(line) + 1}. {line}")
                 line_pick = int(input("Выберите вариант: "))
                 if line_pick > len(player_lines) or line_pick <= 0:
                     print(self.unknown_command)
@@ -17,7 +40,7 @@ class Encounter:
             except ValueError:
                 print(self.unknown_command)
 
-
+#TODO: rebuild move() method to work with dict from Encounter object initialization
     def move(self):
         encounter = True
         while encounter:

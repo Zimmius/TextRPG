@@ -3,9 +3,10 @@ from Character import Character
 from Encounter import Encounter
 
 
-Encounter1 = Encounter()
-player_lines = {1: "-Bla bla!!!", 2: "-Ble ble!", 3: "-Blu Blu!"}
-tavern_guard_lines = {1: "Стражник: -Стой, кто идёт!\n"}
+
+player_lines = ["-Bla bla!!!", "-Ble ble!", "-Blu Blu!"]
+tavern_guard_lines = ["Стражник: -Стой, кто идёт!\n"]
+Encounter1 = Encounter(dialogues={'player': player_lines, 'other': tavern_guard_lines})
 player_weapons = {1: {"name": "Рука", "damage": [1, 4]}, 2: {"name": "Something else", "damage": [10, 15]}}
 enemy_weapons = {1: {"name": "Дубина", "damage": [1, 4]}}
 Enemy = Character('npc', 40, 1, 3,  10, enemy_weapons, "Стражник таверны")
@@ -33,8 +34,10 @@ elif move == 2:
           "доносящимся изнутри - это придорожная таверна. \n"
           "У входа стоит стражник одетый в легкую кольчугу\n"
           "При твоём приближении он поворачивается и обращается к тебе")
-    guard_dialogue = Encounter1.dialogue(player_lines, tavern_guard_lines)
-    print(guard_dialogue)
+    dialogue = Encounter1.dialogue(slice(0,3), 0)
+    print(dialogue)
+    if dialogue == 3:
+        print("\nПрахади")
 elif move == move:
     print(f"\nТы несётешься на свет как ополумевший и орёшь: {move} \n"
           "Подбегая ты видишь небольшую древянную хижину. \n"

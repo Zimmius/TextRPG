@@ -17,11 +17,11 @@ class Character:
                                      "Не перживай, дажу у самых лучших бывают промахи.",
                                      "Ещё бы. Ты его вообще видел?", "Кажись, тебе *****."],
                           'failphrases': [
-                              'Ты делаешь неудачный выпад, твоя нога подскальзывается на камне выворачиваясь'
+                              '\nТы делаешь неудачный выпад, твоя нога подскальзывается на камне выворачиваясь'
                               ' под неестественным углом.',
-                              'Замахиваясь, ты отвлёкся на пролетающую мимо '
+                              '\nЗамахиваясь, ты отвлёкся на пролетающую мимо '
                               'бабочку, и траектория удара сместилась в сторону твоего колена.',
-                              'Ты вдруг вспомнил, что в школе тебя обызвали плюшкой и эта психологическая '
+                              '\nТы вдруг вспомнил, что в школе тебя обызвали плюшкой и эта психологическая '
                               'травма бьёт сильнее любого меча.'],
                           'battle': [f"Ты получаешь {damage} урона.",
                                      f"У тебя осталось {self.health} здоровья.\n",
@@ -32,15 +32,15 @@ class Character:
                                     "Над ухом просвистело",
                                     "Хаха, пни его в ответ",
                                     "Кажись, ему *****."],
-                         'failphrases': [f"\n{self.name} раскручивается на месте для удара\nно не справляется с управл"
+                         'failphrases': [f"{self.name} раскручивается на месте для удара\nно не справляется с управл"
                                          f"eнием и падает в грязь.",
-                                         f"\n{self.name} изменился в лице, кажется ему внезапоно приспичило\nи он "
+                                         f"{self.name} изменился в лице, кажется ему внезапоно приспичило\nи он "
                                          f"вынужден терпеть.",
-                                         f"\nЗамахиваясь {self.name} бьёт себя по хребту. Ну что за кадр?"],
+                                         f"Замахиваясь {self.name} бьёт себя по хребту. Ну что за кадр?"],
                          'battle': [f"{self.name} получает {damage} урона.",
                                     f"У {self.name} осталось {self.health} здоровья.\n",
                                     f"{self.name} наносит тебе {damage} урона!",
-                                    f"У тебя осталось {enemy.health} здоровья.\n",
+                                    f"У тебя осталось {enemy.health} здоровья.",
                                     f"{self.name} промахивается\n"]}
 
         if self.type == 'player':
@@ -74,6 +74,10 @@ class Character:
               f"Твой показатель защиты повышен на +{block} на 3 хода.\n")
         return block
 
+    def heal(self, heal_source):
+        heal_amount = heal_source["hp"]
+        self.health += heal_amount
+
     def filter_inventory(self, items_type: str) -> dict:
         filtered_items = {}
         for item in self.inventory:
@@ -85,7 +89,7 @@ class Character:
         showing_description = True
         while showing_description:
             try:
-                print(f"\n{self.inventory[item]['name']}\n"
+                print(f"\n{self.inventory[item]['name']} [{self.inventory[item]['quantity']}]\n"
                       f"{self.inventory[item]['description']}")
                 if self.inventory[item]["hp"] > 0:
                     print(f"Восстанавливает {self.inventory[item]['hp']} здоровья")
@@ -93,12 +97,18 @@ class Character:
                     print(f"Восстанавливает {self.inventory[item]['mp']} энергии")
                 if self.inventory[item]["damage"] != "":
                     print(f"Наносит {self.inventory[item]['damage'][0]}-{self.inventory[item]['damage'][1]} урона")
-
+                if self.inventory[item]["arm"] > 0:
+                    print(f"Повышает защиту на {self.inventory[item]['arm']}")
                 print("\n1. Использовать\n"
                       "0. Назад")
                 use = int(input("Выбери вариант: "))
                 if use == 1:
-                    return self.inventory[item]
+                    if self.inventory[item]["type"] == "consumables":
+                        self.inventory[item]["quantity"] -= 1
+                        if self.inventory[item]["quantity"] <= 0:
+                            return self.inventory.pop(item)
+                    else:
+                        return self.inventory[item]
                 elif use == 0:
                     showing_description = False
                     break
@@ -114,17 +124,20 @@ class Character:
         while picking:
             try:
                 print('')
-                for item in list(items.keys()):
-                    print(f"{list(items.keys()).index(item) + 1}. {item}")
+                if len(items) == 0:
+                    print("Нечего использовать")
+                else:
+                    for item in list(items.keys()):
+                        print(f"{list(items.keys()).index(item) + 1}. {item}")
                 print(f"0. Назад")
                 item_pick = int(input("Выбери вариант: "))
-                picked_item = list(items.keys())[item_pick - 1]
                 if item_pick > len(list(items.keys())) or item_pick < 0:
                     print(self.unknown_command)
                     continue
-                elif item_pick == 0:
+                if item_pick == 0:
                     picking = False
                     break
+                picked_item = list(items.keys())[item_pick - 1]
                 description_and_pick = self.show_item_description(picked_item)
                 if description_and_pick is None:
                     continue
@@ -134,38 +147,25 @@ class Character:
                 print(self.unknown_command)
 
 
-
-
-
-
-            # try:
-            #     print("\n1. Использовать")
-            #     print("0. Назад")
-            #     pick = int(input("Выбери вариант:"))
-            #     if pick > 2 or pick < 0:
-            #         print(self.unknown_command)
-            #         continue
-            #     elif pick == 0:
-            #         break
-            #     return self.inventory[item]
-            # except ValueError:
-            #     print(self.unknown_command)
-
 # dont forget to remove дубина and all other stuff
 Player = Character('player', 40, 1, 3, 10,
-                   inventory={"золото": {"type": "currency", "quantity": 0},
+                   inventory={"Золото": {"type": "currency", "quantity": 0},
                               "Рука": {"type": "weapon",
                                        "name": "Рука",
                                        "damage": [1, 4],
                                        "hp": 0,
                                        "mp": 0,
+                                       "arm": 0,
                                        "description": "Ты не совсем боец, но на безрыбье и рак - рыба (твоя рука - рак,"
-                                                      " смекаешь?)"},
+                                                      " смекаешь?)",
+                                       "quantity": 1},
                               "Яблоко": {"type": "consumables",
                                          "name": "Яблоко",
                                          "hp": 3,
                                          "mp": 0,
+                                         "arm": 0,
                                          "damage": "",
-                                         "description": f"Восстанавливает здоровье"}
+                                         "description": f"Восстанавливает здоровье",
+                                         "quantity": 1}
                               }
                    )
